@@ -20,7 +20,7 @@ CLIENT_ID = json.loads(
 APPLICATION_NAME = "Restaurant Menu Application"
 
 #Connect to Database and create database session
-engine = create_engine('sqlite:///restaurantmenu.db')
+engine = create_engine('sqlite:///restaurantmenuwithusers.db')
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
@@ -129,7 +129,7 @@ def gdisconnect():
     print login_session['name']
     url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
     h = httplib2.Http()
-    result = h.request(url, 'GET')][0]
+    result = h.request(url, 'GET')[0]
     print 'result is '
     print result
     if result['status'] == '200':
@@ -180,9 +180,9 @@ def restaurantsJSON():
 def showRestaurants():
   restaurants = session.query(Restaurant).order_by(asc(Restaurant.name))
   if 'username' not in login_session:
-      return render_template('publicrestaurants.html', restaurants = restaurants)
+      return render_template('publicrestaurants.html', restaurants=restaurants)
   else:
-      return render_template('restaurants.html', restaurants = restaurants)
+      return render_template('restaurants.html', restaurants=restaurants)
 
 #Create a new restaurant
 @app.route('/restaurant/new/', methods=['GET','POST'])
@@ -195,7 +195,7 @@ def newRestaurant():
       flash('New Restaurant %s Successfully Created' % newRestaurant.name)
       session.commit()
       return redirect(url_for('showRestaurants'))
-  else:
+    else:
       return render_template('newRestaurant.html')
 
 #Edit a restaurant
@@ -209,8 +209,8 @@ def editRestaurant(restaurant_id):
         editedRestaurant.name = request.form['name']
         flash('Restaurant Successfully Edited %s' % editedRestaurant.name)
         return redirect(url_for('showRestaurants'))
-  else:
-    return render_template('editRestaurant.html', restaurant = editedRestaurant)
+    else:
+        return render_template('editRestaurant.html', restaurant = editedRestaurant)
 
 
 #Delete a restaurant
@@ -220,12 +220,12 @@ def deleteRestaurant(restaurant_id):
         return redirect('/login')
     restaurantToDelete = session.query(Restaurant).filter_by(id = restaurant_id).one()
     if request.method == 'POST':
-    session.delete(restaurantToDelete)
-    flash('%s Successfully Deleted' % restaurantToDelete.name)
-    session.commit()
-    return redirect(url_for('showRestaurants', restaurant_id = restaurant_id))
-  else:
-    return render_template('deleteRestaurant.html',restaurant = restaurantToDelete)
+        session.delete(restaurantToDelete)
+        flash('%s Successfully Deleted' % restaurantToDelete.name)
+        session.commit()
+        return redirect(url_for('showRestaurants', restaurant_id = restaurant_id))
+    else:
+        return render_template('deleteRestaurant.html',restaurant = restaurantToDelete)
 
 #Show a restaurant menu
 @app.route('/restaurant/<int:restaurant_id>/')
@@ -253,7 +253,7 @@ def newMenuItem(restaurant_id):
       session.commit()
       flash('New Menu %s Item Successfully Created' % (newItem.name))
       return redirect(url_for('showMenu', restaurant_id = restaurant_id))
-  else:
+    else:
       return render_template('newmenuitem.html', restaurant_id = restaurant_id)
 
 #Edit a menu item
@@ -320,4 +320,5 @@ def getUserID(email):
 if __name__ == '__main__':
   app.secret_key = 'super_secret_key'
   app.debug = True
+  app.run(host = '0.0.0.0', port = 5050)
   app.run(host = '0.0.0.0', port = 5050)
